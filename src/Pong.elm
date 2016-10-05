@@ -26,8 +26,8 @@ init =
   let
     model =
       { ball = ball
-      , player1 = player1 
-      , player2 = player2
+      , leftPlayer = leftPlayer
+      , rightPlayer = rightPlayer
       , width = 500
       , height = 500
       , backgroundColor = "#333333"
@@ -46,22 +46,24 @@ ball =
     }
 
 
-player1 : Player
-player1 =
+leftPlayer : Player
+leftPlayer =
     { pos = Point 0 50
     , width = 10
     , height = 40
     , speed = 5
+    , score = 0
     , color = "#FF0000"
     }
 
 
-player2 : Player
-player2 =
+rightPlayer : Player
+rightPlayer =
     { pos = Point 300 50
     , width = 10
     , height = 40
     , speed = 5
+    , score = 0
     , color = "#0000FF"
     }
 
@@ -71,8 +73,8 @@ player2 =
 
 type alias Model =
   { ball : Ball
-  , player1 : Player
-  , player2 : Player
+  , leftPlayer : Player
+  , rightPlayer : Player
   , width : Int
   , height : Int
   , backgroundColor : String
@@ -93,6 +95,7 @@ type alias Player =
   , width : Int
   , height : Int
   , speed : Int
+  , score : Int
   , color : String
   }
 
@@ -114,27 +117,30 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of 
     MoveBall time ->
-      let 
-        newModel = { model | ball = updateBall model }
-      in 
-        (newModel, Cmd.none)
-
-
-updateBall : Model -> Ball
-updateBall model =
-  let
-    { player1, player2 } = model
-
-    player1Box =
       let
-        { pos, width, height } = player1
+        collision = calculateCollision model
+        newModel = updateScore model collision
+        newModel' =
+          { newModel | ball = updateBall newModel collision }
+      in 
+        (newModel', Cmd.none)
+
+
+calculateCollision : Model -> Maybe Collision
+calculateCollision model =
+  let
+    { leftPlayer, rightPlayer } = model
+
+    leftPlayerBox =
+      let
+        { pos, width, height } = leftPlayer
         { x, y } = pos
       in
         getRectBox x y width height
 
-    player2Box =
+    rightPlayerBox =
       let
-        { pos, width, height } = player2
+        { pos, width, height } = rightPlayer
         { x, y } = pos
       in
         getRectBox x y width height
@@ -149,9 +155,46 @@ updateBall model =
 
     boundsBox = getRectBox 0 0 model.width model.height
 
-    collision = getCollision ballBox player1Box player2Box boundsBox
-    foo = Debug.log(toString collision)
+  in
+    getCollision ballBox leftPlayerBox rightPlayerBox boundsBox
 
+
+updateScore : Model -> Maybe Collision -> Model
+updateScore model collision =
+  let
+    leftScore =
+      model.leftPlayer.score +
+        if collision == Just RightCollision then
+          1
+        else
+          0
+
+    rightScore =
+      model.rightPlayer.score +
+        if collision == Just LeftCollision then
+          1
+        else
+          0
+
+    leftPlayer =
+      model.leftPlayer
+
+    rightPlayer =
+      model.rightPlayer
+
+    newLeftPlayer =
+      { leftPlayer | score = leftScore }
+
+    newRightPlayer =
+      { rightPlayer | score = rightScore }
+  in
+    { model | leftPlayer = newLeftPlayer, rightPlayer = newRightPlayer }
+
+
+
+updateBall : Model -> Maybe Collision -> Ball
+updateBall model collision =
+  let
     (dx, dy) =
       case collision of
         Just LeftPaddleCollision ->
@@ -168,11 +211,11 @@ updateBall model =
 
         Just LeftCollision ->
           -- TODO: handle scoring
-          (-1, 1)
+          (1, 1)
 
         Just RightCollision ->
           -- TODO: handle scoring
-          (-1, 1)
+          (1, 1)
 
         Nothing ->
           (1, 1)
@@ -219,9 +262,9 @@ view model =
   in
     svg boxAttrs 
       [ rect (fill model.backgroundColor :: boxAttrs) []
-      , viewPlayer model.player1
+      , viewPlayer model.leftPlayer
       , viewBall model.ball
-      , viewPlayer model.player2
+      , viewPlayer model.rightPlayer
       ]
 
 
