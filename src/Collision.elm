@@ -63,11 +63,11 @@ getCollision ball leftPaddle rightPaddle bounds =
 
 getLeftPaddleCollision : BallBox -> LeftPaddleBox -> Bool
 getLeftPaddleCollision ball paddle =
-  (ball.top <= paddle.bottom || ball.bottom >= paddle.top) &&
+  (ball.top <= paddle.bottom && ball.bottom >= paddle.top) &&
   (ball.left <= paddle.right && ball.right >= paddle.right)
 
 
 getRightPaddleCollision : BallBox -> RightPaddleBox -> Bool
 getRightPaddleCollision ball paddle =
-  (ball.top <= paddle.bottom || ball.bottom >= paddle.top) &&
+  (ball.top <= paddle.bottom && ball.bottom >= paddle.top) &&
   (ball.right >= paddle.left && ball.left <= paddle.left)

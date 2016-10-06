@@ -176,11 +176,8 @@ updateScore model collision =
         else
           0
 
-    leftPlayer =
-      model.leftPlayer
-
-    rightPlayer =
-      model.rightPlayer
+    leftPlayer = model.leftPlayer
+    rightPlayer = model.rightPlayer
 
     newLeftPlayer =
       { leftPlayer | score = leftScore }
@@ -211,11 +208,11 @@ updateBall model collision =
 
         Just LeftCollision ->
           -- TODO: handle scoring
-          (1, 1)
+          (-1, 1)
 
         Just RightCollision ->
           -- TODO: handle scoring
-          (1, 1)
+          (-1, 1)
 
         Nothing ->
           (1, 1)
@@ -303,7 +300,7 @@ viewBall ball =
 viewScores : Model -> (Svg a, Svg a)
 viewScores model =
   let
-    {leftPlayer, rightPlayer} = model
+    { leftPlayer, rightPlayer } = model
 
     midX = model.width // 2
     midY = model.height // 2
