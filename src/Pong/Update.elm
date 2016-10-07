@@ -1,4 +1,4 @@
-module Pong.Update exposing (Msg(..), update)
+module Pong.Update exposing (Msg(..), update, nextRound)
 
 import Time exposing (Time)
 
@@ -8,49 +8,59 @@ import Pong.Collision exposing (..)
 
 type Msg
   = MoveBall Time
+  | NextRound
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  case msg of
-    MoveBall time ->
-      let
-        collision = getCollision model
-        newModel = updateScore model collision
-        newModel' =
-          { newModel | ball = updateBall newModel collision }
-      in
-        (newModel', Cmd.none)
+  let
+    newModel =
+      case msg of
+        MoveBall time ->
+          let
+            collision = getCollision model
+            nextModel = updateScore model collision
+          in
+            { nextModel | ball = updateBall nextModel collision }
+
+        NextRound ->
+          nextRound model
+  in
+    (newModel, Cmd.none)
 
 
 updateScore : Model -> Maybe Collision -> Model
 updateScore model collision =
   let
+    { leftPlayer, rightPlayer } = model
+
     leftScore =
-      model.leftPlayer.score +
+      leftPlayer.score +
         if collision == Just RightCollision then
           1
         else
           0
 
     rightScore =
-      model.rightPlayer.score +
+      rightPlayer.score +
         if collision == Just LeftCollision then
           1
         else
           0
-
-    leftPlayer = model.leftPlayer
-    rightPlayer = model.rightPlayer
 
     newLeftPlayer =
       { leftPlayer | score = leftScore }
 
     newRightPlayer =
       { rightPlayer | score = rightScore }
-  in
-    { model | leftPlayer = newLeftPlayer, rightPlayer = newRightPlayer }
 
+    model =
+      { model | leftPlayer = newLeftPlayer, rightPlayer = newRightPlayer }
+  in
+    if leftScore /= leftPlayer.score || rightScore /= rightPlayer.score then
+      nextRound model
+    else
+      model
 
 
 updateBall : Model -> Maybe Collision -> Ball
@@ -81,12 +91,11 @@ updateBall model collision =
         Nothing ->
           (1, 1)
 
+    { ball } = model
+    { x, y } = ball.velocity
+
     newBall =
-      let
-        ball = model.ball
-        { x, y } = ball.velocity
-      in
-        { ball | velocity = Point (x * dx) (y * dy) }
+      { ball | velocity = Point (x * dx) (y * dy) }
    in
      moveBall newBall
 
@@ -100,3 +109,27 @@ moveBall ball =
     newPos = Point (x + vx) (y + vy)
   in
     { ball | origin = newPos }
+
+
+nextRound : Model -> Model
+nextRound model =
+  let
+    { court, ball, leftPlayer, rightPlayer, currentRound } = model
+    centerX = (court.origin.x + court.width) // 2
+    centerY = (court.origin.y + court.height) // 2
+
+    newBall = { ball | origin = Point centerX centerY }
+
+    newLeftPlayer =
+        { leftPlayer | origin = Point leftPlayer.origin.x centerY }
+
+    newRightPlayer =
+        { rightPlayer | origin = Point rightPlayer.origin.x centerY }
+
+  in
+    { model
+      | ball = newBall
+      , leftPlayer = newLeftPlayer
+      , rightPlayer = newRightPlayer
+      , currentRound = currentRound + 1
+    }

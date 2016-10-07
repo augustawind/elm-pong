@@ -10,7 +10,7 @@ import Pong.Model exposing (..)
 view : Model -> Html msg
 view model =
   let
-    { court } = model
+    { court, ball, leftPlayer, rightPlayer } = model
 
     boxAttrs =
       [ width (toString court.width)
@@ -20,13 +20,12 @@ view model =
       ]
 
     (leftScoreView, rightScoreView) = viewScores model
-
   in
     svg boxAttrs
       [ rect (fill model.court.color :: boxAttrs) []
-      , viewBall model.ball
-      , viewPlayer model.leftPlayer
-      , viewPlayer model.rightPlayer
+      , viewBall ball
+      , viewPlayer leftPlayer
+      , viewPlayer rightPlayer
       , leftScoreView
       , rightScoreView
       ]
@@ -61,18 +60,18 @@ viewBall ball =
 
 viewScores : Model -> (Svg a, Svg a)
 viewScores model =
+  (text "foo", text "bar")
+  {-
   let
     { leftPlayer, rightPlayer } = model
 
-    { origin, width, height } = model.court
-    { x, y } = origin
+    { court } = model
+    { origin } = court
 
-    midX = (x + width) // 2
-    midY = (y + height) // 2
-    leftX = (x + midX) // 2
-    rightX = x + midX + leftX
-
-    textWidth = 50
+    midX = (origin.x + court.width) // 2
+    midY = (origin.y + court.height) // 2
+    leftX = (origin.x + midX) // 2
+    rightX = origin.x + midX + leftX
 
     leftScore = leftPlayer.score
     leftColor = leftPlayer.color
@@ -83,6 +82,7 @@ viewScores model =
     ( viewScore leftColor leftScore leftX midY
     , viewScore rightColor rightScore rightX midY
     )
+  -}
 
 
 viewScore : String -> Int -> Int -> Int -> Svg a

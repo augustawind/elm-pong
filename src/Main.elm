@@ -3,9 +3,8 @@ module Main exposing (..)
 import Html.App as App
 import Time exposing (Time, second)
 
-import Pong.Collision exposing (..)
 import Pong.Model exposing (..)
-import Pong.Update exposing (Msg(..), update)
+import Pong.Update exposing (Msg(..), update, nextRound)
 import Pong.View exposing (view)
 
 
@@ -29,12 +28,12 @@ init =
       , ball = ball
       , leftPlayer = leftPlayer
       , rightPlayer = rightPlayer
-      , currentRound = 0
+      , currentRound = -1
       , totalRounds = 5
       , framesPerSecond = 60
       }
   in
-    (model, Cmd.none)
+    (nextRound model, Cmd.none)
 
 
 court : Court

@@ -58,7 +58,6 @@ getCollision model =
         getCircleBox x y radius
 
     boundsBox = getRectBox 0 0 width height
-
   in
     getBoxCollision ballBox leftPlayerBox rightPlayerBox boundsBox
 
