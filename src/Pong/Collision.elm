@@ -31,9 +31,7 @@ type alias BoundsBox = Box
 getCollision : Model -> Maybe Collision
 getCollision model =
   let
-    { leftPlayer, rightPlayer } = model
-
-    { width, height } = model.court
+    { court, leftPlayer, rightPlayer } = model
 
     leftPlayerBox =
       let
@@ -57,7 +55,7 @@ getCollision model =
       in
         getCircleBox x y radius
 
-    boundsBox = getRectBox 0 0 width height
+    boundsBox = getRectBox court.origin.x court.origin.y court.width court.height
   in
     getBoxCollision ballBox leftPlayerBox rightPlayerBox boundsBox
 

@@ -3,7 +3,7 @@ module Pong.Update exposing (Msg(..), update, nextRound)
 import Time exposing (Time)
 
 import Pong.Model exposing (..)
-import Pong.Collision exposing (..)
+import Pong.Collision exposing (Collision(..), getCollision)
 
 
 type Msg
