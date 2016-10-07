@@ -33,29 +33,31 @@ getCollision model =
   let
     { leftPlayer, rightPlayer } = model
 
+    { width, height } = model.court
+
     leftPlayerBox =
       let
-        { pos, width, height } = leftPlayer
-        { x, y } = pos
+        { origin, width, height } = leftPlayer
+        { x, y } = origin
       in
         getRectBox x y width height
 
     rightPlayerBox =
       let
-        { pos, width, height } = rightPlayer
-        { x, y } = pos
+        { origin, width, height } = rightPlayer
+        { x, y } = origin
       in
         getRectBox x y width height
 
     ballBox =
       let
-        { pos, size } = model.ball
-        { x, y } = pos
+        { origin, size } = model.ball
+        { x, y } = origin
         radius = size // 2
       in
         getCircleBox x y radius
 
-    boundsBox = getRectBox 0 0 model.width model.height
+    boundsBox = getRectBox 0 0 width height
 
   in
     getBoxCollision ballBox leftPlayerBox rightPlayerBox boundsBox

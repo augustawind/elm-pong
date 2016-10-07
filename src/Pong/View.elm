@@ -10,17 +10,20 @@ import Pong.Model exposing (..)
 view : Model -> Html msg
 view model =
   let
+    { court } = model
+
     boxAttrs =
-      [ width (toString model.width)
-      , height (toString model.height)
-      , x "0", y "0"
+      [ width (toString court.width)
+      , height (toString court.height)
+      , x (toString court.origin.x)
+      , y (toString court.origin.y)
       ]
 
     (leftScoreView, rightScoreView) = viewScores model
 
   in
     svg boxAttrs
-      [ rect (fill model.backgroundColor :: boxAttrs) []
+      [ rect (fill model.court.color :: boxAttrs) []
       , viewBall model.ball
       , viewPlayer model.leftPlayer
       , viewPlayer model.rightPlayer
@@ -34,8 +37,8 @@ viewPlayer player =
   let
     playerWidth = toString player.width
     playerHeight = toString player.height
-    playerX = toString player.pos.x
-    playerY = toString player.pos.y
+    playerX = toString player.origin.x
+    playerY = toString player.origin.y
   in
     rect
       [ width playerWidth
@@ -50,8 +53,8 @@ viewBall : Ball -> Html msg
 viewBall ball =
   let
     radius = toString (ball.size // 2)
-    ballX = toString ball.pos.x
-    ballY = toString ball.pos.y
+    ballX = toString ball.origin.x
+    ballY = toString ball.origin.y
   in
     circle [ cx ballX, cy ballY, r radius, fill ball.color ] []
 
@@ -61,10 +64,13 @@ viewScores model =
   let
     { leftPlayer, rightPlayer } = model
 
-    midX = model.width // 2
-    midY = model.height // 2
-    leftX = midX // 2
-    rightX = midX + leftX
+    { origin, width, height } = model.court
+    { x, y } = origin
+
+    midX = (x + width) // 2
+    midY = (y + height) // 2
+    leftX = (x + midX) // 2
+    rightX = x + midX + leftX
 
     textWidth = 50
 

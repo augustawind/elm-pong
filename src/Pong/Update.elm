@@ -94,9 +94,9 @@ updateBall model collision =
 moveBall : Ball -> Ball
 moveBall ball =
   let
-    { x, y } = ball.pos
+    { x, y } = ball.origin
     vx = ball.velocity.x
     vy = ball.velocity.y
     newPos = Point (x + vx) (y + vy)
   in
-    { ball | pos = newPos }
+    { ball | origin = newPos }

@@ -25,21 +25,30 @@ init : (Model, Cmd Msg)
 init =
   let
     model =
-      { ball = ball
+      { court = court
+      , ball = ball
       , leftPlayer = leftPlayer
       , rightPlayer = rightPlayer
-      , width = 500
-      , height = 500
-      , backgroundColor = "#333333"
+      , currentRound = 0
+      , totalRounds = 5
       , framesPerSecond = 60
       }
   in
     (model, Cmd.none)
 
 
+court : Court
+court =
+  { origin = Point 0 0
+  , width = 500
+  , height = 500
+  , color = "#333333"
+  }
+
+
 ball : Ball
 ball =
-    { pos = Point 65 65
+    { origin = Point 65 65
     , size = 10
     , velocity = Point -2 -1
     , color = "#00FF00"
@@ -48,7 +57,7 @@ ball =
 
 leftPlayer : Player
 leftPlayer =
-    { pos = Point 0 50
+    { origin = Point 0 50
     , width = 10
     , height = 40
     , speed = 5
@@ -59,7 +68,7 @@ leftPlayer =
 
 rightPlayer : Player
 rightPlayer =
-    { pos = Point 300 50
+    { origin = Point 300 50
     , width = 10
     , height = 40
     , speed = 5

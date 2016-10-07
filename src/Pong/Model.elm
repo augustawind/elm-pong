@@ -2,18 +2,26 @@ module Pong.Model exposing (..)
 
 
 type alias Model =
-  { ball : Ball
+  { court : Court
+  , ball : Ball
   , leftPlayer : Player
   , rightPlayer : Player
-  , width : Int
-  , height : Int
-  , backgroundColor : String
+  , currentRound : Int
+  , totalRounds : Int
   , framesPerSecond : Float
   }
 
 
+type alias Court =
+  { origin : Point
+  , width : Int
+  , height : Int
+  , color : String
+  }
+
+
 type alias Ball =
-  { pos : Point
+  { origin : Point
   , size : Int
   , velocity : Point
   , color : String
@@ -21,7 +29,7 @@ type alias Ball =
 
 
 type alias Player =
-  { pos : Point
+  { origin : Point
   , width : Int
   , height : Int
   , speed : Int
